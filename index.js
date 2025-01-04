@@ -3,6 +3,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import todomodel from './Models/Todo.js';
 import dotenv from 'dotenv';
+import { MongoClient, ServerApiVersion } from 'mongodb';
 
 dotenv.config();
 
@@ -109,6 +110,6 @@ const PORT = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGO_URI,)
     .then(() => {
         console.log("Connection successful to MongoDB");
-        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+        app.listen(3000, () => console.log(`Server running on port 3000`));
     })
     .catch(err => console.error('Error connecting to MongoDB:', err));
