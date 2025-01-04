@@ -8,21 +8,36 @@ dotenv.config();
 
 const app = express();
 
+const uri =
+	"mongodb+srv://terabhaiheckerhai:u3YoDE3A1nsUMoxP@cluster0.ijpdo.mongodb.net/todo?retryWrites=true&w=majority&appName=Cluster0";
+const client = new MongoClient(uri, {
+	serverApi: {
+		version: ServerApiVersion.v1,
+		strict: true,
+		deprecationErrors: true
+	}
+});
+
 // Middleware
-app.use(cors({
-    origin: [""], 
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-}));
+// app.use(cors({
+//     origin: ["http://localhost:5173"], 
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     credentials: true
+// }));
 
 app.use(express.json()); // Parse JSON request bodies
 
 // Routes
 app.get("/", async (req, res) => {
     try {
-        const admin = mongoose.connection.db.admin();
-        const dbs = await admin.listDatabases();
-        res.json({ message: "Deployed Successfully.", databases: dbs.databases });
+        await client.connect();
+        console.log("Connected to MongoDB!");
+        const db = client.db("todo");
+        const tasksCollection = db.collection("tasks");
+        const allTasks = await tasksCollection.find().toArray();
+        res.json(allTasks);
+        // const dbs = await admin.listDatabases();
+        // res.json({ message: "Deployed Successfully.", databases: dbs.databases });
     } catch (err) {
         console.error("Error fetching database list:", err);
         res.status(500).json({ error: "Failed to fetch database list" });
@@ -90,7 +105,7 @@ app.delete('/delete/:id', async (req, res) => {
 });
 
 // Start server and connect to MongoDB
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
 mongoose.connect(process.env.MONGO_URI,)
     .then(() => {
         console.log("Connection successful to MongoDB");
